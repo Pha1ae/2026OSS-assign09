@@ -1,4 +1,6 @@
-document.getElementById("bookForm").addEventListener("submit", (event) => {
+const API_URL = "https://6adea6e14e88f1bba4a53a78.mockapi.io/books";
+
+document.getElementById("bookForm").addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const title = document.getElementById("title").value.trim();
@@ -15,7 +17,26 @@ document.getElementById("bookForm").addEventListener("submit", (event) => {
         rating
     };
 
-    console.log(newBook);
+    try {
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(newBook)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        await loadBooks();
+        event.target.reset();
+
+    } catch (error) {
+        console.error(error);
+        document.getElementById("errorMessage").textContent = error.message;
+    }
 });
 
 function renderBooks(books) {
@@ -24,16 +45,14 @@ function renderBooks(books) {
 
     books.forEach(book => {
         const li = document.createElement("li");
-        li.textContent = `${book.title} - ${book.author} - ${book.grene} - ${book.year}`;
+        li.textContent = `${book.title} - ${book.author} - ${book.genre} - ${book.year}`;
         list.appendChild(li);
     });
 }
 
 async function loadBooks() {
     try {
-        const response = await fetch(
-            "https://6adea6e14e88f1bba4a53a78.mockapi.io/books"
-        );
+        const response = await fetch(API_URL);
 
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}`);
