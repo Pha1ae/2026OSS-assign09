@@ -1,3 +1,14 @@
+function renderBooks(books) {
+    const list = document.getElementById("bookList");
+    list.innerHTML = "";
+
+    books.forEach(book => {
+        const li = document.createElement("li");
+        li.textContent = `${book.title} - ${book.author} - ${book.grene} - ${book.year}`;
+        list.appendChild(li);
+    });
+}
+
 async function loadBooks() {
     try {
         const response = await fetch(
@@ -9,14 +20,10 @@ async function loadBooks() {
         }
 
         const books = await response.json();
-        const list = document.getElementById("bookList");
 
-        list.innerHTML = "";
-        books.forEach(book => {
-            const li = document.createElement("li");
-            li.textContent = `${book.title} - ${book.author}`;
-            list.appendChild(li);
-        });
+        renderBooks(books);
+
+        document.getElementById("errorMessage").textContent = "";
 
     } catch (error) {
         console.error(error);
