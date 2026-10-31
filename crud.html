@@ -10,6 +10,18 @@
 <body>
     <h1>Book Management</h1>
     <ul id="bookList"></ul>
+    <h2>Add New Book</h2>
+    
+    <form id="bookForm">
+        <input type="text" id="title" placeholder="Title" required>
+        <input type="text" id="author" placeholder="Author" required>
+        <input type="text" id="genre" placeholder="Genre" required>
+        <input type="number" id="year" placeholder="Year" required>
+        <input type="number" id="rating" placeholder="Rating (1-5)" min="1" max="5" required>
+    
+        <button type="submit">Add Book</button>
+    </form>
+
     <p id="errorMessage"></p>
     
     <script src="crud.js"></script>

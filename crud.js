@@ -1,3 +1,23 @@
+document.getElementById("bookForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const title = document.getElementById("title").value.trim();
+    const author = document.getElementById("author").value.trim();
+    const genre = document.getElementById("genre").value.trim();
+    const year = Number(document.getElementById("year").value);
+    const rating = Number(document.getElementById("rating").value);
+
+    const newBook = {
+        title,
+        author,
+        genre,
+        year,
+        rating
+    };
+
+    console.log(newBook);
+});
+
 function renderBooks(books) {
     const list = document.getElementById("bookList");
     list.innerHTML = "";
