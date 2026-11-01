@@ -53,6 +53,7 @@ function renderBooks(books) {
     books.forEach(book => {
         const li = document.createElement("li");
         li.textContent = `${book.title} - ${book.author} - ${book.genre} - ${book.year}`;
+        li.className = "list-group-item";
 
         const editButton = document.createElement("button");
         editButton.textContent = "Edit";
