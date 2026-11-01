@@ -41,20 +41,13 @@ document.getElementById("bookForm").addEventListener("submit", async (event) => 
     }
 
     try {
-        const response = await fetch(API_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(newBook)
-        });
+        await saveBook(newBook);
 
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-        }
-
-        await loadBooks();
         event.target.reset();
+        editingId = null;
+
+        document.querySelector('#bookForm button[type="submit"]')
+            .textContent = "Add Book";
 
     } catch (error) {
         console.error(error);
@@ -69,8 +62,54 @@ function renderBooks(books) {
     books.forEach(book => {
         const li = document.createElement("li");
         li.textContent = `${book.title} - ${book.author} - ${book.genre} - ${book.year}`;
+
+        const editButton = document.createElement("button");
+        editButton.textContent = "Edit";
+
+        editButton.addEventListener("click", () => {
+            editBook(book);
+        });
+
+        li.appendChild(editButton);
         list.appendChild(li);
     });
+}
+
+let editingId = null;
+
+function editBook(book) {
+    editingId = book.id;
+
+    document.getElementById("title").value = book.title;
+    document.getElementById("author").value = book.author;
+    document.getElementById("genre").value = book.genre;
+    document.getElementById("year").value = book.year;
+    document.getElementById("rating").value = book.rating;
+
+    document.querySelector('#bookForm button[type="submit"]')
+        .textContent = "Update Book";
+}
+
+async function saveBook(newBook) {
+    const method = editingId === null ? "POST" : "PATCH";
+
+    const url = editingId === null
+        ? API_URL
+        : `${API_URL}/${editingId}`;
+
+    const response = await fetch(url, {
+        method: method,
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(newBook)
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+    }
+
+    await loadBooks();
 }
 
 async function loadBooks() {
@@ -82,7 +121,6 @@ async function loadBooks() {
         }
 
         const books = await response.json();
-
         renderBooks(books);
 
         document.getElementById("errorMessage").textContent = "";
