@@ -1,4 +1,5 @@
 const API_URL = "https://6adea6e14e88f1bba4a53a78.mockapi.io/books";
+let allBooks = [];
 
 function validateBook(book) {
     if (!book.title || !book.author || !book.genre) {
@@ -65,11 +66,17 @@ function renderBooks(books) {
 
         const editButton = document.createElement("button");
         editButton.textContent = "Edit";
-
         editButton.addEventListener("click", () => {
             editBook(book);
         });
 
+        const deleteButton = document.createElement("button");
+        deleteButton.textContent = "Delete";
+        deleteButton.addEventListener("click", () => {
+            deleteBook(book.id);
+        });
+
+        li.appendChild(deleteButton);
         li.appendChild(editButton);
         list.appendChild(li);
     });
@@ -88,6 +95,28 @@ function editBook(book) {
 
     document.querySelector('#bookForm button[type="submit"]')
         .textContent = "Update Book";
+}
+
+async function deleteBook(id) {
+    if (!confirm("Delete this book?")) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/${id}`, {
+            method: "DELETE"
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        await loadBooks();
+
+    } catch (error) {
+        console.error(error);
+        document.getElementById("errorMessage").textContent = error.message;
+    }
 }
 
 async function saveBook(newBook) {
@@ -120,8 +149,8 @@ async function loadBooks() {
             throw new Error(`HTTP ${response.status}`);
         }
 
-        const books = await response.json();
-        renderBooks(books);
+        allBooks = await response.json();
+        searchBooks();
 
         document.getElementById("errorMessage").textContent = "";
 
