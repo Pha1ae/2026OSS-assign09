@@ -1,5 +1,21 @@
 const API_URL = "https://6adea6e14e88f1bba4a53a78.mockapi.io/books";
 
+function validateBook(book) {
+    if (!book.title || !book.author || !book.genre) {
+        return "Title, author and genre are required.";
+    }
+
+    if (!Number.isInteger(book.year) || book.year < 1 || book.year > new Date().getFullYear()) {
+        return "Please enter a valid publication year.";
+    }
+
+    if (!Number.isInteger(book.rating) || book.rating < 1 || book.rating > 5) {
+        return "The rating must be an integer between 1 and 5.";
+    }
+
+    return "";
+}
+
 document.getElementById("bookForm").addEventListener("submit", async (event) => {
     event.preventDefault();
 
@@ -16,6 +32,13 @@ document.getElementById("bookForm").addEventListener("submit", async (event) => 
         year,
         rating
     };
+
+    const error = validateBook(newBook);
+
+    if (error) {
+        document.getElementById("errorMessage").textContent = error;
+        return;
+    }
 
     try {
         const response = await fetch(API_URL, {
