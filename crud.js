@@ -56,12 +56,14 @@ function renderBooks(books) {
 
         const editButton = document.createElement("button");
         editButton.textContent = "Edit";
+        editButton.className = "btn btn-sm btn-primary";
         editButton.addEventListener("click", () => {
             editBook(book);
         });
 
         const deleteButton = document.createElement("button");
         deleteButton.textContent = "Delete";
+        deleteButton.className = "btn btn-sm btn-danger";
         deleteButton.addEventListener("click", () => {
             deleteBook(book.id);
         });
