@@ -1,5 +1,7 @@
 const API_URL = "https://6adea6e14e88f1bba4a53a78.mockapi.io/books";
 let allBooks = [];
+document.getElementById("searchInput")
+    .addEventListener("input", searchBooks);
 
 function validateBook(book) {
     if (!book.title || !book.author || !book.genre) {
@@ -42,13 +44,18 @@ document.getElementById("bookForm").addEventListener("submit", async (event) => 
     }
 
     try {
-        await saveBook(newBook);
+        const refreshed = await saveBook(newBook);
 
         event.target.reset();
         editingId = null;
 
         document.querySelector('#bookForm button[type="submit"]')
             .textContent = "Add Book";
+
+        if (!refreshed) {
+            document.getElementById("errorMessage").textContent =
+                "Book saved, but the list could not be refreshed.";
+        }
 
     } catch (error) {
         console.error(error);
@@ -59,6 +66,11 @@ document.getElementById("bookForm").addEventListener("submit", async (event) => 
 function renderBooks(books) {
     const list = document.getElementById("bookList");
     list.innerHTML = "";
+
+    if (books.length === 0) {
+        list.textContent = "No books found.";
+        return;
+    }
 
     books.forEach(book => {
         const li = document.createElement("li");
@@ -111,7 +123,12 @@ async function deleteBook(id) {
             throw new Error(`HTTP ${response.status}`);
         }
 
-        await loadBooks();
+        const refreshed = await loadBooks();
+
+        if (!refreshed) {
+            document.getElementById("errorMessage").textContent =
+                "Book deleted, but the list could not be refreshed.";
+        }
 
     } catch (error) {
         console.error(error);
@@ -138,8 +155,21 @@ async function saveBook(newBook) {
         throw new Error(`HTTP ${response.status}`);
     }
 
-    await loadBooks();
+    return await loadBooks();
 }
+
+function searchBooks() {
+    const keyword = document.getElementById('searchInput').value;
+
+    const cleanKeyword = keyword.trim().toLowerCase();
+
+    const filteredBooks = allBooks.filter(book => {
+        return book.title.toLowerCase().includes(cleanKeyword);
+    });
+
+    renderBooks(filteredBooks);
+}
+
 
 async function loadBooks() {
     try {
@@ -154,9 +184,13 @@ async function loadBooks() {
 
         document.getElementById("errorMessage").textContent = "";
 
+        return true;
+
     } catch (error) {
         console.error(error);
         document.getElementById("errorMessage").textContent = error.message;
+
+        return false;
     }
 }
 
